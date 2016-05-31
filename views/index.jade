@@ -96,41 +96,41 @@ html
 					var styleCodeVal = document.getElementById("styleCode").value;
 					var url = '/api/apparel/' + styleCodeVal;
 					$.get(url)
-							.success(function( data ) {
-								var table = document.getElementById("Colour");
-								var i;
-								while (table.rows.length > 1) {
-									table.deleteRow(1);
-								}
-								for (i = 1; i <= data.color.length; i++) {
-									var row = table.insertRow(i);
-									var cell1 = row.insertCell(0);
-									cell1.innerHTML = data.color[i-1];
-								}
-								table = document.getElementById("Size");
-								while (table.rows.length > 1) {
-									table.deleteRow(1);
-								}
-								for (i = 1; i <= data.size.length; i++) {
-									var row = table.insertRow(i);
-									var cell1 = row.insertCell(0);
-									cell1.innerHTML = data.size[i-1];
-								}
-							})
-							.error(function() {
-								var colourTable = document.getElementById("Colour");
-								while ( colourTable.rows.length > 1) {
-									colourTable.deleteRow(1);
-								}
-								var colourRow = colourTable.insertRow(1);
-								var colourCell = colourRow.insertCell(0);
-								colourCell.innerHTML = 'Color Not Found';
-								var sizeTable = document.getElementById("Size");
-								while ( sizeTable.rows.length > 1) {
-									sizeTable.deleteRow(1);
-								}
-								var sizeRow = sizeTable.insertRow(1);
-								var sizeCell = sizeRow.insertCell(0);
-								sizeCell.innerHTML = 'Size Not Found';
-							});
+						.success(function( data ) {
+							var table = document.getElementById("Colour");
+							var i;
+							while (table.rows.length > 1) {
+								table.deleteRow(1);
+							}
+							for (i = 1; i <= data.color.length; i++) {
+								var row = table.insertRow(i);
+								var cell1 = row.insertCell(0);
+								cell1.innerHTML = data.color[i-1];
+							}
+							table = document.getElementById("Size");
+							while (table.rows.length > 1) {
+								table.deleteRow(1);
+							}
+							for (i = 1; i <= data.size.length; i++) {
+								var row = table.insertRow(i);
+								var cell1 = row.insertCell(0);
+								cell1.innerHTML = data.size[i-1];
+							}
+						})
+						.error(function() {
+							var colourTable = document.getElementById("Colour");
+							while ( colourTable.rows.length > 1) {
+								colourTable.deleteRow(1);
+							}
+							var colourRow = colourTable.insertRow(1);
+							var colourCell = colourRow.insertCell(0);
+							colourCell.innerHTML = 'Color Not Found';
+							var sizeTable = document.getElementById("Size");
+							while ( sizeTable.rows.length > 1) {
+								sizeTable.deleteRow(1);
+							}
+							var sizeRow = sizeTable.insertRow(1);
+							var sizeCell = sizeRow.insertCell(0);
+							sizeCell.innerHTML = 'Size Not Found';
+						});
 				}
