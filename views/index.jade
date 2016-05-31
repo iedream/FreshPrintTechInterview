@@ -4,17 +4,154 @@ html.
 		<meta charset="utf8">
 		<base href="/">
 		<title>Fresh Prints Tech Challenge</title>
+		<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+		<script src="/js/controllers.js"></script>
 		<link rel="stylesheet" href="/css/app.css">
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 	</head>
 	<body>
-		<div ng-controller="AppCtrl" ng-cloak></div>
+		<div ng-app="myApp" ng-controller="AppCtrl">
 			<!-- INSERT HTML CODE HERE -->
-			<h2> FRESH PRINTS TECH CHALLENGE </h2>
-		<script src="js/lib/angular/angular.js"></script>
-		<script src="js/app.js"></script>
-		<script src="js/services.js"></script>
-		<script src="js/controllers.js"></script>
-		<script src="js/filters.js"></script>
-		<script src="js/directives.js"></script>
+			<h2 class="title"> FRESH PRINTS TECH CHALLENGE </h2>
+			<script>
+				var app = angular.module('myApp', []);
+				app.controller('AppCtrl', function($scope, $http) {
+					$http({
+						method: 'GET',
+						url: '/api/brandNames'
+					}).then( function successCallback(response) {
+						var i;
+						var table = document.getElementById("styleTable");
+						for (i = 1; i <= Object.keys(response.data).length; i++) {
+							var row = table.insertRow(i);
+							var cell1 = row.insertCell(0);
+							var cell2 = row.insertCell(1);
+							var brand = Object.keys(response.data)[i-1];
+							var style_code = response.data[brand];
+							cell1.innerHTML = brand;
+							cell2.innerHTML = style_code;
+						};
+					}, function errorCallback(response) {
+						var table = document.getElementById("styleTable");
+						var row = table.insertRow(1);
+						var cell1 = row.insertCell(0);
+						var cell2 = row.insertCell(1);
+						cell1.innerHTML = 'Cannot load data';
+						cell2.innerHTML = 'Cannot load data';
+					});
+				});
+			</script>
+			<form id="styleCodeForm" onSubmit="return info(this,event)" action="/api/apparel/">
+				<label class="input_label">Style Code: </label>
+				<input type="text" name="styleCode" id="styleCode" class = "input_textbox">
+				<input type="submit" value="Get Info" class="style_code_button">
+			</form>
+			<form id="priceForm" onSubmit="return myFunction(this, event)" action="/api/quote">
+				<label class="input_label">Color: </label>
+				<input type="text" name="color" id="color" class = "input_textbox">
+				<label class="input_label">Size: </label>
+				<input type="text" name="size" id="size" class="input_textbox">
+				<label class="input_label">Amount: </label>
+				<input type="text" name="amount" id="amount" class="input_textbox">
+				<input type="submit" value="Get Quote" class="continer button">
+			</form>
+			<div id="result" class="answer_box"></div>
+			<div class = "color_container">
+				<h5>Colour of Chosen Style</h5>
+				<table id="Colour" class="table table-bordered container">
+					<thead>
+						<tr>
+							<th>Colour</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+			<div class = "size_container">
+				<h4>Size of Chosen Style</h4>
+				<table id="Size" class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Color</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+			<div class="apparel_container">
+				<h4>Apparel Style Code</h4>
+				<table class="table table-bordered" id="styleTable">
+					<thead>
+						<tr>
+							<th>brand</th>
+							<th>style_code</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+			<script>
+			function myFunction(sender, e){
+				e.preventDefault();
+				var colorVal = document.getElementById("color").value,
+					sizeVal = document.getElementById("size").value,
+					amountVal = document.getElementById("amount").value,
+					styleCodeVal = document.getElementById("styleCode").value,
+					url = '/api/quote';
+				var posting = $.post(url, {color: colorVal, size: sizeVal, amount: amountVal, styleCode: styleCodeVal});
+				posting.done(function( data ) {
+					var content = data.quote;
+					$( "#result" ).removeClass("error");
+					$( "#result" ).addClass("success");
+					$( "#result" ).empty().append( 'Total Price: $' + data.quote +  '<br>' + 'Price per Item: $' + data.price);
+				});
+				posting.fail(function(err) {
+					var re = err.responseText;
+					$( "#result" ).addClass("error")
+					$( "#result" ).empty().append( re );
+				});
+			};
+			function info(sender, e){
+				e.preventDefault();
+				var styleCodeVal = document.getElementById("styleCode").value;
+				var url = '/api/apparel/' + styleCodeVal;
+				$.get(url)
+					.success(function( data ) {
+						var table = document.getElementById("Colour");
+						var i;
+						while (table.rows.length > 1) {
+							table.deleteRow(1);
+						}
+						for (i = 1; i <= data.color.length; i++) {
+							var row = table.insertRow(i);
+							var cell1 = row.insertCell(0);
+							cell1.innerHTML = data.color[i-1];
+						}
+						table = document.getElementById("Size");
+						while (table.rows.length > 1) {
+							table.deleteRow(1);
+						}
+						for (i = 1; i <= data.size.length; i++) {
+							var row = table.insertRow(i);
+							var cell1 = row.insertCell(0);
+							cell1.innerHTML = data.size[i-1];
+						}
+					})
+					.error(function() {
+						var colourTable = document.getElementById("Colour");
+						while ( colourTable.rows.length > 1) {
+							colourTable.deleteRow(1);
+						}
+						var colourRow = colourTable.insertRow(1);
+						var colourCell = colourRow.insertCell(0);
+						colourCell.innerHTML = 'Color Not Found';
+						var sizeTable = document.getElementById("Size");
+						while ( sizeTable.rows.length > 1) {
+							sizeTable.deleteRow(1);
+						}
+						var sizeRow = sizeTable.insertRow(1);
+						var sizeCell = sizeRow.insertCell(0);
+						sizeCell.innerHTML = 'Size Not Found';
+					});
+			}
+			</script>
+		</div>
 	</body>
