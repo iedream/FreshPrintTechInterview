@@ -62,8 +62,6 @@ api.get('/api/brandNames', function(req, res) {
 	});
 });
 
-
-
 // API endpoint for /api/quote
 api.post('/api/quote', function(req, res) {
 

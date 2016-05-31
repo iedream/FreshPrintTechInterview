@@ -48,6 +48,7 @@
   table-layout: fixed;
   background: lightcyan;
 }
+
 .color_container {
   margin-left: 20px;
   margin-bottom: 20px;
@@ -59,7 +60,6 @@
   background: lightcyan;
 }
 
-
 .input_label {
   width: 40%;
   float: left;
@@ -67,6 +67,7 @@
   color: #abef98;
   margin-bottom: 20px;
 }
+
 .input_textbox {
   width: 30%;
   margin-left: 20px;
